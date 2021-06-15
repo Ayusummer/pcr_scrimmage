@@ -257,11 +257,17 @@ class Role:
         if self.now_stage == NOW_STAGE_OUT:
             return
         # 当前成员还活着? 就变动 tp(上句话中好像已经略过了出局的玩家, 这句话我暂且蒙古)
+        # 我承认是我英语不好导致的歧义(T_T)，这里是 是否保存 的意思
         if is_save:
             self.save_tp += num
             return
         self.tp += num
         # 下面这句暂时蒙古, save_tp 是指保存的 tp 值, 具体有什么用还要继续看下去
+        # 这里是用来处理猫拳这种带有回复tp的角色所做的处理。
+        # 猫拳3技能需要100tp，打倒目标回复60tp，但是tp消耗机制是完全释放成功之后才会进行消耗
+        # 这样的话，在tp还是100的时候+了60tp，突破了tp上限，这60tp就被直接被无视了
+        # 所以，需要保存好回复的tp，等下次tp变动时将这60tp还回去
+        # 找3个人玩一下猫拳就懂了 _(:3)∠)_     （tp消耗机制有待优化）
         self.tp += self.save_tp
         self.save_tp = 0
         # TP 值不会超过上限
